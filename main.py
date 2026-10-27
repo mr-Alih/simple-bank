@@ -1,4 +1,5 @@
 import mysql.connector
+from decimal import Decimal
 
 # init all var
 logged_in = False
@@ -22,14 +23,13 @@ users = {
     for row in cursor.fetchall()
 }
 
-cursor.close()
-conn.close()
 
 # add or subtract money
 def substitute(amount, userid):
+    amount = Decimal(str(amount))
     cursor.execute(
         "UPDATE users SET balance = balance + %s WHERE id = %s",
-        (amount, user[userid])
+        (amount, userid)
     )
 
     conn.commit()
@@ -42,13 +42,15 @@ def static():
 
 def transfer():
     choice = input("Transfer Username > ")
-    CUN = user[str(choice)]
+    CUN = users.get(choice.strip().lower())
     if CUN == None:
         print("System > Error 404 not found")
-        transfer()
+        return
     print("Found user. ", CUN)
-    choice = input("Amount to transfer > ")
-    substitute(choice, CUN)
+    choice = Decimal(input("Amount to transfer > "))
+    substitute(choice, CUN["id"])
+    # now remove your own money
+    substitute(-1*choice, user["id"])
 
 
 # after logging in menu
@@ -96,3 +98,6 @@ while not logged_in:
 print("\nSystem > Welcome to your bank account!")
 static()
 menu()
+
+cursor.close()
+conn.close()
