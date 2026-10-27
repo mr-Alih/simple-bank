@@ -23,17 +23,24 @@ conn.close()
 
 # real code here. 
 
-# adding an input system for logging in
-username = input("User: ")
-password = input("password: ")
-
+# logging in loop
 while not logged_in:
-    for checkid in users:
-        if users[checkid]["name"] == username:
-            if users[checkid]["pin"] == password:
-                print("succesfully logged in")
-                logged_in = True
-            else:
-                print("wrong password")
-    if not logged_in:
-        print("Wrong combination of username and password")
+    username = input("\nUser > ").strip().lower()
+    password = input("Password > ").strip()
+
+    # Zoek de gebruiker rechtstreeks op
+    user = users.get(username)
+
+    if user is None:
+        print("System > Wrong username")
+        continue
+
+    # Controleer het wachtwoord
+    if str(user["pin"]) != password:
+        print("System > Wrong password")
+        continue
+
+    print("System > Successfully logged in")
+    logged_in = True
+
+print("System > Welcome to your bank account!")
