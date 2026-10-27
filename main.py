@@ -2,6 +2,7 @@ import mysql.connector
 
 # init all var
 logged_in = False
+hold_user = False
 
 conn = mysql.connector.connect(
     host="localhost",
@@ -25,8 +26,12 @@ conn.close()
 
 # logging in loop
 while not logged_in:
-    username = input("\nUser > ").strip().lower()
+    if hold_user == False:
+        username = input("\nUser > ").strip().lower()
     password = input("Password > ").strip()
+    if password == "exit":
+        hold_user = False
+        continue
 
     # Zoek de gebruiker rechtstreeks op
     user = users.get(username)
@@ -37,7 +42,9 @@ while not logged_in:
 
     # Controleer het wachtwoord
     if str(user["pin"]) != password:
+        # keep hold of the username.
         print("System > Wrong password")
+        hold_user = True
         continue
 
     print("System > Successfully logged in")
